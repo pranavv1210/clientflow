@@ -13,13 +13,21 @@ import { ChevronLeftIcon } from './icons';
 interface HeaderProps {
   title: string;
   subtitle?: string;
+  brandMark?: ReactNode;
   /** Route to go back to. Omit for a top-level screen. */
   backTo?: string;
   backLabel?: string;
   actions?: ReactNode;
 }
 
-export function AppHeader({ title, subtitle, backTo, backLabel = 'Back', actions }: HeaderProps) {
+export function AppHeader({
+  title,
+  subtitle,
+  brandMark,
+  backTo,
+  backLabel = 'Back',
+  actions,
+}: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 border-b border-hairline bg-canvas/85 backdrop-blur">
       <div className="mx-auto flex max-w-app items-center gap-3 px-4 py-3">
@@ -32,6 +40,7 @@ export function AppHeader({ title, subtitle, backTo, backLabel = 'Back', actions
             <ChevronLeftIcon size={20} />
           </Link>
         ) : null}
+        {!backTo && brandMark ? <div className="shrink-0">{brandMark}</div> : null}
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-[15px] font-semibold leading-tight tracking-tight">
             {title}

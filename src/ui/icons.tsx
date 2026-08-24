@@ -110,8 +110,8 @@ export function PencilIcon({ size = 18, className }: IconProps) {
 export function SettingsIcon({ size = 18, className }: IconProps) {
   return (
     <svg {...svgProps(size, className)}>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 3v2.5M12 18.5V21M4.2 7.5l2.2 1.2M17.6 15.3l2.2 1.2M4.2 16.5l2.2-1.2M17.6 8.7l2.2-1.2" />
+      <circle cx="12" cy="12" r="3.2" />
+      <path d="M19.4 13.5a7.8 7.8 0 000-3l2-1.5-2-3.5-2.4 1a7.7 7.7 0 00-2.6-1.5L14 2.5h-4l-.4 2.5A7.7 7.7 0 007 6.5l-2.4-1-2 3.5 2 1.5a7.8 7.8 0 000 3l-2 1.5 2 3.5 2.4-1a7.7 7.7 0 002.6 1.5l.4 2.5h4l.4-2.5a7.7 7.7 0 002.6-1.5l2.4 1 2-3.5-2-1.5z" />
     </svg>
   );
 }

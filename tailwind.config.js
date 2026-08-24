@@ -36,6 +36,7 @@ export default {
       },
       boxShadow: {
         bar: '0 -1px 0 0 #E6E8EC, 0 -8px 24px -12px rgba(15, 17, 23, 0.12)',
+        card: '0 10px 24px -18px rgba(15, 17, 23, 0.35)',
         pop: '0 12px 32px -12px rgba(15, 17, 23, 0.24)',
       },
       maxWidth: {

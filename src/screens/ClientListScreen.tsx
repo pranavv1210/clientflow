@@ -72,9 +72,14 @@ export function ClientListScreen() {
   return (
     <>
       <AppHeader
-        title="Clients"
+        title="ClientFlow"
         subtitle={
-          workspaces.length === 1 ? '1 workspace' : `${workspaces.length} workspaces`
+          workspaces.length === 1 ? 'Clients - 1 workspace' : `Clients - ${workspaces.length} workspaces`
+        }
+        brandMark={
+          <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-accent-rule bg-accent-soft text-sm font-bold tracking-tight text-accent-deep shadow-sm">
+            CF
+          </span>
         }
         actions={
           <>
@@ -82,7 +87,7 @@ export function ClientListScreen() {
               to="/settings"
               aria-label="Settings"
               title="Settings"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-black/[0.05] hover:text-ink"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-hairline bg-white text-ink-muted shadow-sm transition-colors hover:border-ink-faint hover:text-ink"
             >
               <SettingsIcon size={18} />
             </Link>
@@ -117,7 +122,7 @@ export function ClientListScreen() {
                 value={query}
                 placeholder="Search client or project"
                 onChange={(event) => setQuery(event.target.value)}
-                className="w-full rounded-lg border border-hairline bg-white py-2.5 pl-9 pr-3 placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
+                className="h-14 w-full rounded-xl border border-hairline bg-white py-2.5 pl-11 pr-4 text-[16px] shadow-sm placeholder:text-ink-faint focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20"
               />
             </div>
 
@@ -162,10 +167,9 @@ export function ClientListScreen() {
                 />
               </div>
             ) : (
-              <ul className="mt-4 overflow-hidden rounded-xl border border-hairline bg-white">
+              <ul className="mt-4 space-y-2">
                 {visible.map((workspace, index) => (
-                  <li key={workspace.id}>
-                    {index > 0 ? <div className="ml-16 h-px bg-hairline" /> : null}
+                  <li key={workspace.id} style={{ animationDelay: `${index * 35}ms` }}>
                     <ClientRow workspace={workspace} />
                   </li>
                 ))}
@@ -214,16 +218,16 @@ function ClientRow({ workspace }: { workspace: ClientWorkspace }) {
   return (
     <Link
       to={`/c/${workspace.id}`}
-      className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-canvas active:bg-canvas"
+      className="group flex items-center gap-3 rounded-xl border border-hairline bg-white px-4 py-3.5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-accent-rule hover:shadow-card active:translate-y-0"
     >
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-soft text-xs font-semibold text-accent-deep">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-accent-rule bg-accent-soft text-xs font-semibold text-accent-deep transition-colors group-hover:bg-white">
         {initials(name)}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="flex items-center gap-2">
-          <span className="truncate text-sm font-medium">{name}</span>
+        <span className="flex min-w-0 items-center gap-2">
+          <span className="truncate text-sm font-semibold tracking-tight">{name}</span>
         </span>
-        <span className="mt-0.5 flex items-center gap-1.5">
+        <span className="mt-1 flex min-w-0 items-center gap-1.5">
           <Pill tone={STATUS_TONE[workspace.status]}>{STATUS_LABELS[workspace.status]}</Pill>
           {subtitle ? (
             <span className="truncate text-xs text-ink-muted">{subtitle}</span>
@@ -232,7 +236,7 @@ function ClientRow({ workspace }: { workspace: ClientWorkspace }) {
       </span>
       <span className="shrink-0 text-right">
         {total > 0 ? (
-          <span className="num block text-sm font-medium">{formatMoneyCompact(total)}</span>
+          <span className="num block text-sm font-semibold">{formatMoneyCompact(total)}</span>
         ) : null}
         <span className="block text-2xs text-ink-faint">{relativeTime(workspace.updatedAt)}</span>
       </span>
