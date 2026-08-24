@@ -24,6 +24,7 @@ import {
 import {
   AlertIcon,
   CheckIcon,
+  CloudIcon,
   CopyIcon,
   DownloadIcon,
   EyeIcon,
@@ -35,7 +36,8 @@ import type { ClientStatus, ClientWorkspace } from '../types/client';
 import { displayName } from '../lib/workspace';
 import { allReadiness } from '../lib/documents';
 import type { DocumentKind } from '../lib/documents';
-import { downloadDocument, previewUrl } from '../pdf/generate';
+import { documentFileName } from '../lib/documents';
+import { downloadDocument, generateBlob, previewUrl } from '../pdf/generate';
 import {
   advanceAmount,
   advancePercentUsed,
@@ -45,7 +47,7 @@ import {
   receivedAmount,
 } from '../lib/money';
 import { formatDate, relativeTime } from '../lib/dates';
-import { isSyncConfigured } from '../lib/sheetsSync';
+import { isSyncConfigured, uploadPdfToDrive } from '../lib/sheetsSync';
 
 export function WorkspaceScreen() {
   const { id = '' } = useParams();
@@ -245,7 +247,9 @@ export function WorkspaceScreen() {
 
 function DocumentRail({ workspace }: { workspace: ClientWorkspace }) {
   const toast = useToast();
+  const { settings } = useStore();
   const [busyKind, setBusyKind] = useState<DocumentKind | ''>('');
+  const [driveBusyKind, setDriveBusyKind] = useState<DocumentKind | ''>('');
   const [preview, setPreview] = useState<{ kind: DocumentKind; url: string } | null>(null);
 
   // The object URL is owned by this component; without this the browser holds a
@@ -293,6 +297,35 @@ function DocumentRail({ workspace }: { workspace: ClientWorkspace }) {
     }
   };
 
+  const onSaveToDrive = async (kind: DocumentKind) => {
+    if (!isSyncConfigured(settings)) {
+      toast.show('Connect Google Sheets in Settings first.', 'warn');
+      return;
+    }
+
+    setDriveBusyKind(kind);
+    try {
+      const blob = await generateBlob(kind, workspace);
+      const outcome = await uploadPdfToDrive({
+        kind,
+        workspace,
+        settings,
+        blob,
+        fileName: documentFileName(kind, workspace),
+      });
+      const tone =
+        outcome.status === 'ok' ? 'good' : outcome.status === 'error' ? 'error' : 'warn';
+      toast.show(outcome.message, tone);
+    } catch (error) {
+      toast.show(
+        `That PDF could not be saved. ${error instanceof Error ? error.message : ''}`.trim(),
+        'error',
+      );
+    } finally {
+      setDriveBusyKind('');
+    }
+  };
+
   return (
     <Card className="overflow-hidden">
       <div className="border-b border-hairline px-4 py-3">
@@ -324,7 +357,7 @@ function DocumentRail({ workspace }: { workspace: ClientWorkspace }) {
             </div>
 
             {readiness.ready ? (
-              <div className="mt-3 flex gap-2">
+              <div className="mt-3 flex flex-wrap gap-2">
                 <Button small busy={busyKind === kind} onClick={() => onPreview(kind)}>
                   <EyeIcon size={15} />
                   Preview
@@ -337,6 +370,15 @@ function DocumentRail({ workspace }: { workspace: ClientWorkspace }) {
                 >
                   <DownloadIcon size={15} />
                   PDF
+                </Button>
+                <Button
+                  small
+                  busy={driveBusyKind === kind}
+                  onClick={() => onSaveToDrive(kind)}
+                  title="Save PDF to Google Drive and write the link in your Sheet"
+                >
+                  <CloudIcon size={15} />
+                  Drive
                 </Button>
               </div>
             ) : (

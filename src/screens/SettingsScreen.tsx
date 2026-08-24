@@ -104,13 +104,13 @@ export function SettingsScreen() {
 
           <FormSection
             title="Google Sheet"
-            hint="Optional. Pushes one row per client to a Sheet you own, through an Apps Script Web App — so there is no key to leak and no server to run. The app works fully without it."
+            hint="Optional. Pushes full client data to a Sheet and can save PDFs to Drive through an Apps Script Web App, so there is no key to leak and no server to run. The app works fully without it."
           >
             <Toggle
               checked={settings.sheetsSyncEnabled}
               onChange={(checked) => setSettings({ ...settings, sheetsSyncEnabled: checked })}
               label="Sync clients to my Sheet"
-              hint="When off, nothing leaves this browser."
+              hint="When off, nothing leaves this browser. Turn this on before using the Drive buttons on PDFs."
             />
 
             <Field
@@ -157,8 +157,9 @@ export function SettingsScreen() {
             </div>
 
             <p className="rounded-lg bg-canvas px-3 py-2.5 text-xs leading-relaxed text-ink-muted">
-              A failed sync never blocks anything. Clients are always saved in this browser first,
-              and the Sheet is updated afterwards.
+              A failed sync never blocks anything. Clients are saved in this browser first. The
+              Sheet gets a rich Clients tab, a Dashboard tab, a Documents tab, and Drive links for
+              any PDFs you save.
             </p>
           </FormSection>
 

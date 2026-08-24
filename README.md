@@ -73,9 +73,16 @@ no server to keep running.
 
 ## Google Sheets sync (optional)
 
-This pushes one row per client into a spreadsheet you own — a flat list you can
-filter, sort and total. It is genuinely optional: switch it off, or never
-configure it, and everything else works exactly the same.
+This pushes the full workspace data into a spreadsheet you own and can save PDFs
+into Google Drive. It is genuinely optional: switch it off, or never configure
+it, and everything else works exactly the same.
+
+The script maintains three tabs:
+
+- `Dashboard` — live counts, value, balance due, and saved PDF totals
+- `Clients` — one rich row per client, including scope, pricing, handover, PDF
+  links, and a raw workspace JSON backup column
+- `Documents` — one row per PDF saved to Drive
 
 1. Create a Google Sheet. Name the first tab `Clients`.
 2. In that sheet, choose **Extensions → Apps Script**.
@@ -85,14 +92,22 @@ configure it, and everything else works exactly the same.
    invent. This is what stops anyone who discovers your Web App URL from writing
    rows into your sheet.
 5. Choose **Deploy → New deployment → Web app**. Set *Execute as* to **Me** and
-   *Who has access* to **Anyone**. Google will ask you to authorise it.
+   *Who has access* to **Anyone**. Google will ask you to authorise Spreadsheet
+   access, and Drive access if you use PDF saving.
 6. Copy the deployment URL. It must end in `/exec` — the `/dev` URL only works
    while you are signed in and will fail from the app.
 7. In ClientFlow, open **Settings**, paste the URL and the same secret, and press
    **Test connection**.
 
 The script upserts by client id, so saving the same client twice updates its row
-instead of appending a duplicate.
+instead of appending a duplicate. The PDF buttons on a workspace include a
+`Drive` action; that generates the PDF in the browser, sends it to Apps Script,
+saves it in `ClientFlow PDFs/<client name>/` in Google Drive, writes one row in
+`Documents`, and writes the Drive link back onto the same client row.
+
+After editing `Code.gs`, use **Deploy → Manage deployments**, edit the Web App,
+select **New version**, and deploy again. Saving the script alone does not update
+the live `/exec` URL.
 
 A note on what "Test connection" can tell you. Browsers will not let a page read
 the response from a cross-origin request that Apps Script cannot answer with CORS
