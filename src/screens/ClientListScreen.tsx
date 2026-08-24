@@ -30,7 +30,7 @@ const STATUS_TONE: Record<ClientStatus, 'neutral' | 'accent' | 'good' | 'warn'> 
 type Filter = 'all' | ClientStatus;
 
 export function ClientListScreen() {
-  const { workspaces, addWorkspace } = useStore();
+  const { workspaces, addWorkspace, addDemoWorkspace } = useStore();
   const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
@@ -58,6 +58,11 @@ export function ClientListScreen() {
   const startNew = () => {
     const fresh = addWorkspace();
     navigate(`/c/${fresh.id}/edit`);
+  };
+
+  const loadDemo = () => {
+    const demo = addDemoWorkspace();
+    navigate(`/c/${demo.id}`);
   };
 
   // Counts drive the filter chips, so a chip never promises rows it cannot show.
@@ -105,10 +110,13 @@ export function ClientListScreen() {
             title="No clients yet"
             body="A workspace holds one client's details, scope, pricing and handover notes — and generates all four documents from them."
             action={
-              <Button variant="primary" onClick={startNew}>
-                <PlusIcon size={16} />
-                Create your first client
-              </Button>
+              <div className="flex flex-wrap justify-center gap-2">
+                <Button variant="primary" onClick={startNew}>
+                  <PlusIcon size={16} />
+                  Create your first client
+                </Button>
+                <Button onClick={loadDemo}>Load demo client</Button>
+              </div>
             }
           />
         ) : (

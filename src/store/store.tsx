@@ -24,6 +24,7 @@ import {
   nextInvoiceNumber,
   touchWorkspace,
 } from '../lib/workspace';
+import { createDemoWorkspace } from '../lib/demo';
 import { loadState, saveState } from '../lib/storage';
 import { isSyncConfigured, syncWorkspace } from '../lib/sheetsSync';
 import type { SyncOutcome } from '../lib/sheetsSync';
@@ -37,6 +38,8 @@ interface StoreApi {
   getWorkspace: (id: string) => ClientWorkspace | undefined;
   /** Creates, persists and returns a new draft workspace. */
   addWorkspace: () => ClientWorkspace;
+  /** Creates, persists and returns a complete demo workspace. */
+  addDemoWorkspace: () => ClientWorkspace;
   /** Upserts, stamps updatedAt, persists, and syncs in the background. */
   saveWorkspace: (workspace: ClientWorkspace) => void;
   removeWorkspace: (id: string) => void;
@@ -102,6 +105,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return fresh;
   }, [workspaces]);
 
+  const addDemoWorkspace = useCallback(() => {
+    const demo = createDemoWorkspace();
+    setWorkspaces((current) => [demo, ...current]);
+    backgroundSync(demo, settings);
+    return demo;
+  }, [backgroundSync, settings]);
+
   const saveWorkspace = useCallback(
     (workspace: ClientWorkspace) => {
       const stamped = touchWorkspace(workspace);
@@ -153,6 +163,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       loadWarning,
       getWorkspace,
       addWorkspace,
+      addDemoWorkspace,
       saveWorkspace,
       removeWorkspace,
       duplicate,
@@ -166,6 +177,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       loadWarning,
       getWorkspace,
       addWorkspace,
+      addDemoWorkspace,
       saveWorkspace,
       removeWorkspace,
       duplicate,
