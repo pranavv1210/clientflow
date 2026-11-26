@@ -74,6 +74,9 @@ export function SettingsScreen() {
     const parsed = fromBackupJson(confirmingImport.json);
     if (parsed.ok) {
       replaceWorkspaces(parsed.workspaces);
+      if (parsed.settings) {
+        setSettings({ ...settings, sheetsSyncEnabled: parsed.settings.sheetsSyncEnabled });
+      }
       toast.show(
         `Restored ${parsed.workspaces.length} ${
           parsed.workspaces.length === 1 ? 'client' : 'clients'
