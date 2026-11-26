@@ -120,6 +120,7 @@ export function toBackupJson(workspaces: ClientWorkspace[], settings: AppSetting
 export interface ImportResult {
   ok: boolean;
   workspaces: ClientWorkspace[];
+  settings?: Pick<AppSettings, 'sheetsSyncEnabled'>;
   error?: string;
 }
 
@@ -152,7 +153,21 @@ export function fromBackupJson(text: string): ImportResult {
     };
   }
 
-  return { ok: true, workspaces: list.map(normalizeWorkspace) };
+  const backupSettings =
+    record && typeof record.settings === 'object' && record.settings !== null
+      ? (record.settings as Record<string, unknown>)
+      : null;
+  const sheetsSyncEnabled =
+    typeof backupSettings?.sheetsSyncEnabled === 'boolean'
+      ? backupSettings.sheetsSyncEnabled
+      : undefined;
+
+  return {
+    ok: true,
+    workspaces: list.map(normalizeWorkspace),
+    settings:
+      sheetsSyncEnabled === undefined ? undefined : { sheetsSyncEnabled },
+  };
 }
 
 /** Triggers a browser download for text content. */
